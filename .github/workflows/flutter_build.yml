@@ -1,13 +1,13 @@
-name: Flutter Build and Test
+name: Flutter CI
 
 on:
   push:
     branches:
-      - main  # Déclenche le workflow sur un push vers la branche principale
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Utilise une machine virtuelle Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -16,13 +16,16 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'  # Utilise la version stable de Flutter
+          flutter-version: stable
+
+      - name: Check Flutter version
+        run: flutter --version
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Run tests (optionnel)
-        run: flutter test
+      - name: Run flutter doctor
+        run: flutter doctor
 
       - name: Build APK
-        run: flutter build apk --release  # Générez l'APK pour la release
+        run: flutter build apk --release
