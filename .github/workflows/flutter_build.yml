@@ -4,31 +4,47 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # Vérification du code source
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Configurer Flutter
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.0.5"
+          flutter-version: stable
 
+      # Nettoyage du cache Flutter
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      # Vérification de la version de Flutter et Dart
       - name: Check Flutter version
         run: flutter --version
 
-      - name: Check architecture
-        run: uname -m
-
+      # Installation des dépendances
       - name: Install dependencies
         run: flutter pub get
 
+      # Exécuter `flutter doctor` pour vérifier l'environnement
       - name: Run flutter doctor
         run: flutter doctor
 
+      # Construire l'APK en mode release
       - name: Build APK
         run: flutter build apk --release
+
