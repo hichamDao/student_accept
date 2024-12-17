@@ -1,0 +1,28 @@
+name: Flutter Build and Test
+
+on:
+  push:
+    branches:
+      - main  # Déclenche le workflow sur un push vers la branche principale
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Utilise une machine virtuelle Ubuntu
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'  # Utilise la version stable de Flutter
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests (optionnel)
+        run: flutter test
+
+      - name: Build APK
+        run: flutter build apk --release  # Générez l'APK pour la release
