@@ -4,6 +4,10 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 
+void main() {
+  runApp(PredictPage());
+}
+
 class PredictPage extends StatefulWidget {
   @override
   _PredictPageState createState() => _PredictPageState();
@@ -27,7 +31,7 @@ class _PredictPageState extends State<PredictPage> {
 
     final request = http.MultipartRequest(
       "POST",
-      Uri.parse("http://127.0.0.1:5000/predict"),
+      Uri.parse("http://192.168.1.35:5000/predict"),
     );
     request.files.add(
       await http.MultipartFile.fromPath('image', _image!.path),
