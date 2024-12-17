@@ -3,43 +3,50 @@ name: Flutter Build APK
 on:
   push:
     branches:
-      - main  # Déclenche le workflow sur les pushs vers la branche principale.
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Utilise l'environnement Ubuntu.
+    runs-on: ubuntu-latest
 
     steps:
       # 1. Checkout du code
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # 2. Configuration de Java 17
+      # 2. Installation de JDK 17
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'   # Utilise Eclipse Temurin pour Java.
-          java-version: '17'        # Version de Java requise.
+          distribution: 'temurin'
+          java-version: '17'
 
-      # 3. Configuration de Flutter
+      # 3. Installation de Flutter
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.27.0'
 
-      # 4. Vérification de la version Java
-      - name: Verify Java Version
-        run: java -version
+      # 4. Installation d'Android Command-line Tools
+      - name: Install Android Command-line Tools
+        run: |
+          mkdir -p $ANDROID_HOME/cmdline-tools
+          cd $ANDROID_HOME/cmdline-tools
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O commandlinetools.zip
+          unzip -q commandlinetools.zip
+          mv cmdline-tools latest
+          echo "export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_ENV
 
-      # 5. Accepter les licences SDK Android
+      # 5. Accepter les licences Android SDK
       - name: Accept Android SDK Licenses
-        run: yes | sdkmanager --licenses
+        run: |
+          yes | sdkmanager --licenses
 
       # 6. Installer les dépendances Flutter
       - name: Flutter Pub Get
         run: flutter pub get
 
-      # 7. Nettoyer le projet Flutter
+      # 7. Nettoyer le projet
       - name: Flutter Clean
         run: flutter clean
 
@@ -47,7 +54,7 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
 
-      # 9. Télécharger l'APK généré en tant qu'artifact
+      # 9. Télécharger l'APK comme artifact
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v3
         with:
