@@ -8,15 +8,20 @@ void main() {
   runApp(
     MaterialApp(
       home: PredictPage(),
-      debugShowCheckedModeBanner: false, // Supprime la bannière "debug"
+      debugShowCheckedModeBanner: false,
     ),
   );
+}
+
+class PredictPage extends StatefulWidget {
+  @override
+  _PredictPageState createState() => _PredictPageState();
 }
 
 class _PredictPageState extends State<PredictPage> {
   File? _image;
   final picker = ImagePicker();
-  String _predictionResult = ''; // Champ pour stocker le résultat
+  String _predictionResult = '';
 
   Future<void> _pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
@@ -46,7 +51,7 @@ class _PredictPageState extends State<PredictPage> {
         final data = jsonDecode(responseData.body);
 
         setState(() {
-          _predictionResult = data['label'];  // Afficher le label dans l'UI
+          _predictionResult = data['label'];
         });
       } else {
         setState(() {
@@ -89,4 +94,3 @@ class _PredictPageState extends State<PredictPage> {
     );
   }
 }
-
