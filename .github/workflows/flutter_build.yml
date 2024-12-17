@@ -21,7 +21,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: stable
+          flutter-version: "3.27.0"
 
       # Nettoyage du cache Flutter
       - name: Cache Flutter dependencies
@@ -47,4 +47,3 @@ jobs:
       # Construire l'APK en mode release
       - name: Build APK
         run: flutter build apk --release
-
