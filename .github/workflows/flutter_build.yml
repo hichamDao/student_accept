@@ -27,20 +27,21 @@ jobs:
         with:
           flutter-version: '3.27.0'
 
-      # 4. Installation d'Android Command-line Tools
+      # 4. Installation d'Android SDK Command-line Tools
       - name: Install Android Command-line Tools
         run: |
+          export ANDROID_HOME=$HOME/android-sdk
           mkdir -p $ANDROID_HOME/cmdline-tools
           cd $ANDROID_HOME/cmdline-tools
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O commandlinetools.zip
-          unzip -q commandlinetools.zip
+          wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O commandlinetools.zip
+          unzip commandlinetools.zip
           mv cmdline-tools latest
-          echo "export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_ENV
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_ENV
 
       # 5. Accepter les licences Android SDK
       - name: Accept Android SDK Licenses
-        run: |
-          yes | sdkmanager --licenses
+        run: yes | sdkmanager --licenses
 
       # 6. Installer les dépendances Flutter
       - name: Flutter Pub Get
