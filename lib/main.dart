@@ -13,14 +13,10 @@ void main() {
   );
 }
 
-class PredictPage extends StatefulWidget {
-  @override
-  _PredictPageState createState() => _PredictPageState();
-}
-
 class _PredictPageState extends State<PredictPage> {
   File? _image;
   final picker = ImagePicker();
+  String _predictionResult = ''; // Champ pour stocker le résultat
 
   Future<void> _pickImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
@@ -36,20 +32,31 @@ class _PredictPageState extends State<PredictPage> {
 
     final request = http.MultipartRequest(
       "POST",
-      Uri.parse("http://192.168.1.35:5000/predict"), // Utilisez l'adresse correcte ici
+      Uri.parse("http://192.168.1.35:5000/predict"),
     );
     request.files.add(
       await http.MultipartFile.fromPath('image', _image!.path),
     );
 
-    final response = await request.send();
+    try {
+      final response = await request.send();
 
-    if (response.statusCode == 200) {
-      final responseData = await http.Response.fromStream(response);
-      final data = jsonDecode(responseData.body);
-      print("Résultat : ${data['label']}");
-    } else {
-      print("Erreur : ${response.statusCode}");
+      if (response.statusCode == 200) {
+        final responseData = await http.Response.fromStream(response);
+        final data = jsonDecode(responseData.body);
+
+        setState(() {
+          _predictionResult = data['label'];  // Afficher le label dans l'UI
+        });
+      } else {
+        setState(() {
+          _predictionResult = "Erreur: ${response.statusCode}";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _predictionResult = "Erreur de communication";
+      });
     }
   }
 
@@ -72,8 +79,14 @@ class _PredictPageState extends State<PredictPage> {
             onPressed: _sendImageToServer,
             child: Text("Envoyer au serveur"),
           ),
+          SizedBox(height: 20),
+          Text(
+            _predictionResult.isEmpty ? "Aucune prédiction" : "Résultat : $_predictionResult",
+            style: TextStyle(fontSize: 20),
+          ),
         ],
       ),
     );
   }
 }
+
