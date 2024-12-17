@@ -3,44 +3,51 @@ name: Flutter Build APK
 on:
   push:
     branches:
-      - main  # Déclenche le workflow sur chaque push vers la branche principale.
+      - main  # Déclenche le workflow sur les pushs vers la branche principale.
 
 jobs:
   build:
-    name: Build Flutter APK
     runs-on: ubuntu-latest  # Utilise l'environnement Ubuntu.
 
     steps:
-      # Étape 1: Récupérer le code source
+      # 1. Checkout du code
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Étape 2: Configurer Flutter
+      # 2. Configuration de Java 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'   # Utilise Eclipse Temurin pour Java.
+          java-version: '17'        # Version de Java requise.
+
+      # 3. Configuration de Flutter
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.27.0"  # Spécifiez votre version Flutter
+          flutter-version: '3.27.0'
 
-      # Étape 3: Accepter les licences SDK Android
+      # 4. Vérification de la version Java
+      - name: Verify Java Version
+        run: java -version
+
+      # 5. Accepter les licences SDK Android
       - name: Accept Android SDK Licenses
-        run: |
-          yes | sdkmanager --licenses || true
-        env:
-          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64  # Assurez-vous que Java 17 est configuré.
+        run: yes | sdkmanager --licenses
 
-      # Étape 4: Installer les dépendances Flutter
+      # 6. Installer les dépendances Flutter
       - name: Flutter Pub Get
         run: flutter pub get
 
-      # Étape 5: Nettoyer le projet
+      # 7. Nettoyer le projet Flutter
       - name: Flutter Clean
         run: flutter clean
 
-      # Étape 6: Construire l'APK
+      # 8. Construire l'APK en mode release
       - name: Build APK
         run: flutter build apk --release
 
-      # Étape 7: Upload de l'APK en tant qu'artifact
+      # 9. Télécharger l'APK généré en tant qu'artifact
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v3
         with:
