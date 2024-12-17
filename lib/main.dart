@@ -5,7 +5,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(PredictPage());
+  runApp(
+    MaterialApp(
+      home: PredictPage(),
+      debugShowCheckedModeBanner: false, // Supprime la bannière "debug"
+    ),
+  );
 }
 
 class PredictPage extends StatefulWidget {
