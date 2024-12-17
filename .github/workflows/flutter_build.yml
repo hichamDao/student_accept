@@ -16,10 +16,13 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: stable
+          flutter-version: "3.0.5"
 
       - name: Check Flutter version
         run: flutter --version
+
+      - name: Check architecture
+        run: uname -m
 
       - name: Install dependencies
         run: flutter pub get
