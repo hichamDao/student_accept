@@ -36,7 +36,7 @@ class _PredictPageState extends State<PredictPage> {
 
     final request = http.MultipartRequest(
       "POST",
-      Uri.parse("http://192.168.1.35:5000/predict"),
+      Uri.parse("http://192.168.1.35:5000/predict"), // Utilisez l'adresse correcte ici
     );
     request.files.add(
       await http.MultipartFile.fromPath('image', _image!.path),
