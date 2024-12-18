@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -9,7 +8,7 @@ void main() {
   runApp(
     MaterialApp(
       home: PredictPage(),
-      debugShowCheckedModeBanner: false, // Supprime la bannière "debug"
+      debugShowCheckedModeBanner: false,
     ),
   );
 }
@@ -20,9 +19,9 @@ class PredictPage extends StatefulWidget {
 }
 
 class _PredictPageState extends State<PredictPage> {
-  File? _image; // Fichier de l'image capturée
-  final picker = ImagePicker(); // Pour accéder à la caméra
-  List<Map<String, dynamic>> _faces = []; // Liste des visages détectés
+  File? _image;
+  final picker = ImagePicker();
+  List<Map<String, dynamic>> _faces = [];
 
   // Méthode pour capturer une image
   Future<void> _pickImage() async {
@@ -47,7 +46,7 @@ class _PredictPageState extends State<PredictPage> {
     try {
       final request = http.MultipartRequest(
         "POST",
-        Uri.parse("http://192.168.1.35:5000/predict"), // Remplacez par l'adresse de votre serveur
+        Uri.parse("http://192.168.1.35:5000/predict"), // Adresse du serveur
       );
       request.files.add(
         await http.MultipartFile.fromPath('image', _image!.path),
@@ -59,13 +58,13 @@ class _PredictPageState extends State<PredictPage> {
         final responseData = await http.Response.fromStream(response);
         final data = jsonDecode(responseData.body);
 
-        // Afficher les données dans la console Flutter
-        print('Réponse du serveur : $data');
+        print("Réponse brute du serveur : ${responseData.body}");
 
         if (data.containsKey('faces')) {
           setState(() {
-            _faces = List<Map<String, dynamic>>.from(data['faces']); // Stocke les résultats
+            _faces = List<Map<String, dynamic>>.from(data['faces']);
           });
+          print("Liste des visages détectés : $_faces");
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Erreur : ${data['error']}")),
@@ -83,7 +82,7 @@ class _PredictPageState extends State<PredictPage> {
     }
   }
 
-  // Méthode pour afficher l'image avec les résultats de détection
+  // Méthode pour afficher l'image avec les résultats
   Widget _buildImageWithFaces() {
     if (_image == null) {
       return Text("Aucune image sélectionnée.");
@@ -91,21 +90,21 @@ class _PredictPageState extends State<PredictPage> {
 
     return Stack(
       children: [
-        Image.file(_image!), // Affiche l'image capturée
+        Image.file(_image!),
         if (_faces.isNotEmpty)
           ..._faces.map((face) {
             final box = face['box'];
             final label = face['label'];
+            final confidence = face['confidence'];
+
             return Positioned(
               left: box[0].toDouble(),
               top: box[1].toDouble(),
               child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(4),
-                ),
+                padding: EdgeInsets.all(5),
+                color: Colors.white,
                 child: Text(
-                  label,
+                  "$label (${(confidence * 100).toStringAsFixed(2)}%)",
                   style: TextStyle(
                     color: Colors.red,
                     fontSize: 16,
@@ -123,7 +122,7 @@ class _PredictPageState extends State<PredictPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Détection de Visages 2"),
+        title: Text("Détection de Visages"),
         centerTitle: true,
       ),
       body: Center(
@@ -131,7 +130,7 @@ class _PredictPageState extends State<PredictPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
-              child: _buildImageWithFaces(), // Affiche l'image et les résultats
+              child: _buildImageWithFaces(),
             ),
             SizedBox(height: 20),
             Row(
