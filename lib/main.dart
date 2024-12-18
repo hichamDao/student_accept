@@ -35,7 +35,7 @@ class _PredictPageState extends State<PredictPage> {
     }
   }
 
-  // Méthode pour envoyer une image au serveur
+  // Méthode pour envoyer une image au serveur et obtenir les prédictions
   Future<void> _sendImageToServer() async {
     if (_image == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -93,6 +93,7 @@ class _PredictPageState extends State<PredictPage> {
           ..._faces.map((face) {
             final box = face['box'];
             final label = face['label'];
+            final confidence = face['confidence'].toStringAsFixed(2);
             return Positioned(
               left: box[0].toDouble(),
               top: box[1].toDouble(),
@@ -102,7 +103,7 @@ class _PredictPageState extends State<PredictPage> {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  label,
+                  '$label ($confidence)',
                   style: TextStyle(
                     color: Colors.red,
                     fontSize: 16,
