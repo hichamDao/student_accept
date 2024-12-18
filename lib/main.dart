@@ -123,7 +123,7 @@ class _PredictPageState extends State<PredictPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Détection de Visages"),
+        title: Text("Détection de Visages 2"),
         centerTitle: true,
       ),
       body: Center(
