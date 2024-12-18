@@ -35,7 +35,7 @@ class _PredictPageState extends State<PredictPage> {
     }
   }
 
-  // Méthode pour envoyer une image au serveur et obtenir les prédictions
+  // Méthode pour envoyer une image au serveur
   Future<void> _sendImageToServer() async {
     if (_image == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -58,6 +58,9 @@ class _PredictPageState extends State<PredictPage> {
       if (response.statusCode == 200) {
         final responseData = await http.Response.fromStream(response);
         final data = jsonDecode(responseData.body);
+
+        // Afficher les données dans la console Flutter
+        print('Réponse du serveur : $data');
 
         if (data.containsKey('faces')) {
           setState(() {
@@ -93,7 +96,6 @@ class _PredictPageState extends State<PredictPage> {
           ..._faces.map((face) {
             final box = face['box'];
             final label = face['label'];
-            final confidence = face['confidence'].toStringAsFixed(2);
             return Positioned(
               left: box[0].toDouble(),
               top: box[1].toDouble(),
@@ -103,7 +105,7 @@ class _PredictPageState extends State<PredictPage> {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  '$label ($confidence)',
+                  label,
                   style: TextStyle(
                     color: Colors.red,
                     fontSize: 16,
